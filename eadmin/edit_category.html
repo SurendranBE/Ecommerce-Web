@@ -1,0 +1,276 @@
+{% extends "eadmin/includes/base.html" %}
+{% load static %}
+{% block title %}Update Category{% endblock %}
+{% block body_content %}
+<div class="content content-fixed">
+    <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0 min_height600">
+        <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                        <li class="breadcrumb-item"><a href="/eadmin/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/category/view">Manage Category</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Category</li>
+                    </ol>
+                </nav>
+                <h4 class="mg-b-0 tx-spacing--1">Edit Category</h4>
+            </div>
+        </div>
+        <!-- <hr class="mg-y-40"> -->
+        <div class="form-error"></div>
+        <form method="POST" id="editCategory" autocomplete="off" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" name="category_id" id="category_id" value="{{category_edit.id}}">
+                    <fieldset class="form-fieldset">
+                        <legend>Category Information</legend>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Category Name <em>*</em></label>
+                                        <input type="text" value="{{category_edit.category_name}}" class="form-control" placeholder="Enter Category Name" id="category_name" name="category_name">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Sort Order <em>*</em></label>
+                                    <input type="number" value="{{category_edit.sort_order}}" class="form-control" placeholder="Enter Sort Order" name="sort_order" id="sort_order" required="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Select Status <em>*</em></label>
+                                    <select class="form-control select2" tabindex="-1" aria-hidden="true" name="draft_status" id="draft_status" required="">
+                                        <option value="1" {% if category_edit.draft_status == 1 %} selected{% endif %}>Publish</option>
+                                        <option value="0" {% if category_edit.draft_status == 0 %} selected{% endif %}>Draft</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="d-block">Description</label>
+                            <textarea class='summernote' name="description" id="description" placeholder="Description">{{category_edit.description}}</textarea>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-fieldset">
+                        <legend>Image Upload</legend>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% if category_edit.image == "" %}
+                                <div class="form-group">
+                                    <label>Category Image<em>*</em></label>
+                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                        <div class="fileupload-preview fileupload-large thumbnail"><img src="{% static 'eadmin/assets/img/file_upload_icon.jpg' %}"></div>
+                                        <div>
+                                            <span class="btn btn-default btn-file">
+                                                <span class="fileupload-new">Select image</span>
+                                                <span class="fileupload-exists">Change</span>
+                                                <input type="file" id="image" name="image" />
+                                                <input type="hidden" name="imagecheck" id="imagecheck" value="0" />
+                                            </span>
+                                            <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                        </div>
+                                    </div>
+                                    <div class="imgerr"></div>
+                                </div>
+                                {% else %}
+                                <div class="form-group">
+                                    <label>Category Image</label>
+                                    <input type="hidden" id="imagecheck" name="imagecheck" value="1" />
+                                    <input type="hidden" id="img" name="img" value="" />
+                                    <div class="customer_pic_edit">
+                                        <img src="{{category_edit.image.url}}" class="img-thumbnail">
+                                        <button type="button" class="btn btn-danger removeCatgImageIcon" data-type="image" data-item="{{category_edit.image.url}}"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if category_edit.banner_img == "" %}
+                                <div class="form-group">
+                                    <label>Banner Image <em>*</em></label>
+                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                        <div class="fileupload-preview fileupload-large thumbnail"><img src="{% static 'eadmin/assets/img/file_upload_icon.jpg' %}"></div>
+                                        <div>
+                                            <span class="btn btn-default btn-file">
+                                                <span class="fileupload-new">Select image</span>
+                                                <span class="fileupload-exists">Change</span>
+                                                <input type="file" id="banner_img" name="banner_img" />
+                                                <input type="hidden" name="bannerimgecheck" id="bannerimgecheck" value="0" />
+                                            </span>
+                                            <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                        </div>
+                                    </div>
+                                    <div class="imgerr"></div>
+                                </div>
+                                {% else %}
+                                <div class="form-group">
+                                    <label>Banner Image</label>
+                                    <input type="hidden" id="bannerimgecheck" name="bannerimgecheck" value="1" />
+                                    <input type="hidden" id="banner_img" name="banner_img" value="" />
+                                    <div class="customer_pic_edit">
+                                        <img src="{{category_edit.banner_img}}" class="img-thumbnail">
+                                        <button type="button" class="btn btn-danger removeCatgImageIcon" data-type="banner" data-item="{{category_edit.banner_img}}"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="form_submit_footer">
+                <div class="form_footer_contents">
+                    <div class="text-right m-b-0">
+                        <a href="/category/view" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div><!-- container -->
+</div><!-- content -->
+{% endblock %}
+{% block foot_script %}
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+$("#editCategory").validate({
+    rules: {
+        category_name: {
+            required: true
+
+        },
+        sort_order: {
+            required: true
+
+        },
+        image: {
+            required: true
+        },
+        banner_img: {
+            required: true
+        },
+       
+    },
+    messages: {
+        category_name: {
+            required: "Please Enter Category Name",
+        },
+        sort_order: {
+            required: "Please Enter Sort Order",
+        },
+        image: {
+            required: "Please Upload image",
+        },
+        banner_img: {
+            required: "Please Upload Banner Image",
+        },
+        
+    },
+    submitHandler: function(form) {
+        var data = new FormData($('form').get(0));
+        category_id = $("#category_id").val();
+        swal({
+            title: "Are sure you to update this category ?",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#5fbeaa",
+            confirmButtonText: "Yes, update it!",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        }, function(isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    url: '/category/ajax-edit/'+category_id,
+                    data: data,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    method: 'POST',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $(".page_loading").show();
+                    },
+                    success: function(data){
+                        $(".page_loading").hide();
+                        if(data['update_status'] == "Success"){
+                            window.location.href = "/category/view";
+                        }else {
+                            swal("Cancelled", "Category not added", "error");
+                        }
+                    }
+                });
+            } else {
+                swal("Cancelled", "Category not added", "error");
+            }
+        })
+        return false;
+    }
+});
+
+
+$(".removeCatgImageIcon").click(function() {
+    var id    = $(this).data("item");
+    var image_type  = $(this).data("type");
+    category_id = $("#category_id").val();
+    swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this Image !",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false,
+        closeOnCancel: false
+    }, function(isConfirm) {
+        if (isConfirm) {
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                type: "POST",
+                url: '/category/remove-image/'+category_id,
+                dataType: 'json',
+                data: {'image_type': image_type},
+                beforeSend: function() {
+                    $(".page_loading").show();
+                },
+                success: function(data) {
+                    $(".page_loading").hide();
+                    if(data['update_status'] == "Success"){
+                        swal({
+                            title: 'Updated Successfully',
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: `OK`,
+                        },function(result) {
+                            if (result) {
+                                window.location.href = "/category/edit/"+category_id;
+                            }
+                        })
+                    }
+                }
+            });
+        } else {
+            swal("Cancelled", "Image retained", "error");
+        }
+    });
+    return false;
+});
+</script>
+{% endblock %}

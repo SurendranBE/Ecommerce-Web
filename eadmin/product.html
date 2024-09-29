@@ -1,0 +1,536 @@
+{% extends "eadmin/includes/base.html" %} 
+{% load static %} 
+{% block title%}Ecommerce | Product{% endblock %} 
+{% block body_content %}
+<div class="content content-fixed">
+  <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0 min_height600">
+    <div
+      class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+            <li class="breadcrumb-item"><a href="/eadmin/">Dashboard</a></li>
+            <li class="breadcrumb-item">
+              <a href="/product/view">Manage Category</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Add Product
+            </li>
+          </ol>
+        </nav>
+        <h4 class="mg-b-0 tx-spacing--1">Add Product</h4>
+      </div>
+    </div>
+    <div class="form-error"></div>
+    <form
+      method="POST"
+      id="addProduct"
+      autocomplete="off"
+      accept-charset="utf-8"
+      enctype="multipart/form-data"
+    >
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-12">
+          <fieldset class="form-fieldset">
+            <legend>General Information</legend>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Product Name<em>*</em></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter Product Name"
+                    name="product_name"
+                    id="product_name"
+                    required=""
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="breadcrumb-item">Product Category List</label><br>
+                <select class="form-control">
+                  <option value="0" selected>Category</option>
+                  {% for category_val in categories %}
+                  <option value="{{ category_val.category_id }}">{{ category_val.category_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea
+                class="summernote"
+                name="description"
+                id="description"
+                placeholder="Description"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Price <em>*</em></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter Price"
+                    name="price"
+                    id="price"
+                    required=""
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label>Stock <em>*</em></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    placeholder="Enter Stock"
+                    name="stock"
+                    id="stock"
+                    required=""
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Available <em>*</em></label>
+              <select
+                class="form-control select2 availabilityToggle"
+                tabindex="-1"
+                aria-hidden="true"
+                name="available"
+                id="available"
+                required=""
+              >
+                <option value="1">Available</option>
+                <option value="0">Not Available</option>
+              </select>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <fieldset class="form-fieldset">
+        <legend>Image Upload</legend>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Category Image <em>*</em></label>
+                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                        <div class="fileupload-preview fileupload-large thumbnail"><img src="{% static 'eadmin/assets/img/file_upload_icon.jpg' %}"></div>
+                        <div>
+                            <span class="btn btn-default btn-file">
+                                <span class="fileupload-new">Select image</span>
+                                <span class="fileupload-exists">Change</span>
+                                <input type="file" id="image" name="image" />
+                                <input type="hidden" name="" id="" />
+                            </span>
+                            <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
+                        </div>
+                    </div>
+                    <div class="imgerr"></div>
+                </div>
+            </div>
+      <div class="form_submit_footer">
+        <div class="form_footer_contents">
+          <div class="text-right m-b-0">
+            <a href="/product/view" class="btn btn-secondary">Cancel</a>
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- container -->
+</div>
+<!-- content -->
+{% endblock %}
+{% block foot_script %}
+<script>
+  $("#addProduct").validate({
+    rules: {
+      product_name: {
+        required: true,
+      },
+      description: {
+        required: true,
+      },
+      price: {
+        required: true,
+      },
+      stock: {
+        required: true,
+      },
+      image: {
+        required: true,
+      }
+    },
+    messages: {
+      product_name: {
+        required: "Please Enter product Name",
+      },
+      description: {
+        required: "Please Enter Description",
+      },
+      price: {
+        required: "Please Enter price",
+      },
+      stock: {
+        required: "Please Enter Stock",
+      },
+      image: {
+        required: "Please Enter Image",
+      },
+    },
+    submitHandler: function (form) {
+      var data = new FormData($("form").get(0));
+      $.ajax({
+        url: "{% url 'ajax_insert' %}",
+        data: data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        method: "POST",
+        dataType: "json",
+        beforeSend: function () {
+          $(".page_loading").show();
+        },
+        success: function (data) {
+          $(".page_loading").hide();
+          if (data["save_status"] == "Success") {
+            swal(
+              {
+                title: "Saved Successfully",
+                confirmButtonText: `OK`,
+              },
+              function () {
+                window.location.href = "/product/view";
+              }
+            );
+          } else {
+            swal({
+              icon: "error",
+              title: "Oops...",
+              text: "Save Failed!",
+            });
+          }
+        },
+      });
+      return false;
+    },
+  });
+  $(document).on("change", ".availabilityToggle", function () {
+    var productId = $(this).data("id");
+    var availability = $(this).val();
+
+    $.ajax({
+      url: "/product/ajax-toggle-availability/" + productId + "/",
+      method: "POST",
+      dataType: "json",
+      data: {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        availability: availability,
+      },
+      success: function (response) {
+        if (response.update_status === "Success") {
+          swal("Updated Successfully", "", "success");
+        } else {
+          swal("Update Failed", "", "error");
+        }
+      },
+      error: function (xhr, status, error) {
+        swal({
+          icon: "error",
+          title: "An error occurred",
+          text: error,
+        });
+      },
+    });
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  
+<div class="content content-fixed">
+  <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0 min_height600">
+    <div
+      class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30"
+    >
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+            <li class="breadcrumb-item"><a href="/eadmin/">Dashboard</a></li>
+            <li class="breadcrumb-item">
+              <a href="/category/view">Manage Category</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Add Product
+            </li>
+          </ol>
+        </nav>
+        <h4 class="mg-b-0 tx-spacing--1">Add Category</h4>
+      </div>
+    </div>
+    <div class="form-error"></div>
+    <form
+      method="POST"
+      id="addProduct"
+      autocomplete="off"
+      accept-charset="utf-8"
+      enctype="multipart/form-data"
+    >
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-12">
+          <fieldset class="form-fieldset">
+            <legend>General Information</legend>
+            <div class="form-group">
+              <label>Product Name<em>*</em></label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter Product Name"
+                name="product_name"
+                id="product_name"
+                required=""
+              />
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea
+                class="summernote"
+                name="product_description"
+                id="product_description"
+                placeholder="Description"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Price <em>*</em></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter Price"
+                    name="product_price"
+                    required=""
+                    id="product_priceprice"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label>Stock <em>*</em></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    placeholder="Enter Stock"
+                    name="product_stock"
+                    required=""
+                    id="product_stockstock"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Status <em>*</em></label>
+              <select
+                class="form-control select2"
+                tabindex="-1"
+                aria-hidden="true"
+                name="product_available"
+                id="product_available"
+                required=""
+              >
+                <option value="1">Available</option>
+                <option value="0">Not Available</option>
+              </select>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div class="form_submit_footer">
+        <div class="form_footer_contents">
+          <div class="text-right m-b-0">
+            <a href="/product/view" class="btn btn-secondary"
+              >Cancel</a
+            >
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  ----container -->
+<!-- </div> -->
+<!-- content -->
+<!-- 
+
+<script>
+$("#addProduct").validate({
+    rules: {
+      producr_name: {
+        required: true,
+      },
+      product_description: {
+        required: true,
+      },
+      product_price: {
+        required: true,
+      },
+      product_stock: {
+        required: true,
+      },
+    },
+    messages: {
+      product_name: {
+        required: "Please Enter product Name",
+      },
+      product_description: {
+        required: "Please Enter Description",
+      },
+      product_price: {
+        required: "Please Enter price",
+      },
+      product_stock: {
+        required: "Please Enter Stock",
+      },
+    },
+    submitHandler: function (form) {
+      var data = new FormData($("form").get(0));
+      var draft_status = $("#draft_status").val();
+      if (draft_status == 1) {
+        swal(
+          {
+            title: "Are sure you to publish this category ?",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#5fbeaa",
+            confirmButtonText: "Yes, publish it!",
+            closeOnConfirm: true,
+            closeOnCancel: true,
+          },
+          function (isConfirm) {
+            if (isConfirm) {
+              $.ajax({
+                url: "/product/ajax-insert",
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                method: "POST",
+                dataType: "json",
+                beforeSend: function () {
+                  $(".page_loading").show();
+                },
+                success: function (data) {
+                  $(".page_loading").hide();
+                  if (data["save_status"] == "Success") {
+                    swal(
+                      {
+                        title: "Saved Successfully",
+                        showDenyButton: false,
+                        showCancelButton: false,
+                        confirmButtonText: `OK`,
+                      },
+                      function (result) {
+                        if (result) {
+                          window.location.href = "/product/view";
+                        }
+                      }
+                    );
+                  }
+                  if (data["save_status"] == "Failed") {
+                    swal({
+                      icon: "error",
+                      title: "Oops...",
+                      text: "Save Failed!",
+                    });
+                  }
+                },
+              });
+            } else {
+              swal("Cancelled", "Category not added", "error");
+            }
+          }
+        );
+      } else {
+        $.ajax({
+          url: "/product/ajax-insert",
+          data: data,
+          cache: false,
+          processData: false,
+          contentType: false,
+          method: "POST",
+          dataType: "json",
+          beforeSend: function () {
+            $(".page_loading").show();
+          },
+          success: function (data) {
+            $(".page_loading").hide();
+            if (data["save_status"] == "Success") {
+              swal(
+                {
+                  title: "Saved Successfully",
+                  showDenyButton: false,
+                  showCancelButton: false,
+                  confirmButtonText: `OK`,
+                },
+                function (result) {
+                  if (result) {
+                    alert("TESTss");
+                    window.location.href = "/product/view";
+                  }
+                }
+              );
+            }
+            if (data["save_status"] == "Failed") {
+              swal({
+                icon: "error",
+                title: "Oops...",
+                text: "Save Failed!",
+              });
+            }
+          },
+        });
+      }
+      return false;
+    },
+  });
+</script>
+  -->

@@ -1,0 +1,172 @@
+{% extends "eadmin/includes/base.html" %}
+{% load static %}
+{% block title %}Ecommerce Management{% endblock %}
+{% block body_content %}
+<div class="content content-fixed min_height650">
+    <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+        <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+            <div>
+                <h4 class="mg-b-0 tx-spacing--1">
+                   Dashboard
+                </h4>
+            </div>
+        </div>
+        <div class="row row-xs">
+          <div class="col-sm-6 col-lg-2 mg-t-10 mg-lg-t-0">
+                <div class="card card-body">
+                    <h6 class="tx-uppercase tx-11 tx-spacing-1 tx-color-02 tx-semibold mg-b-8">Total Orders</h6>
+                    <div class="d-flex d-lg-block d-xl-flex align-items-end">
+                        <h3 class="tx-normal tx-rubik mg-b-0 mg-r-5 lh-1">10
+                        </h3>
+                    </div>
+                </div>
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-2 mg-t-10 mg-lg-t-0">
+                <div class="card card-body">
+                    <h6 class="tx-uppercase tx-11 tx-spacing-1 tx-color-02 tx-semibold mg-b-8">Total Customers</h6>
+                    <div class="d-flex d-lg-block d-xl-flex align-items-end">
+                        <h3 class="tx-normal tx-rubik mg-b-0 mg-r-5 lh-1">50
+                        </h3>
+                    </div>
+                </div>
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-2">
+                <div class="card card-body">
+                    <h6 class="tx-uppercase tx-11 tx-spacing-1 tx-color-02 tx-semibold mg-b-8">Today Orders</h6>
+                    <div class="d-flex d-lg-block d-xl-flex align-items-end">
+                        <h3 class="tx-normal tx-rubik mg-b-0 mg-r-5 lh-1">2
+                        </h3>
+                    </div>
+                </div>
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-2 mg-t-10 mg-sm-t-0">
+                <div class="card card-body">
+                    <h6 class="tx-uppercase tx-11 tx-spacing-1 tx-color-02 tx-semibold mg-b-8">Shipped Orders</h6>
+                    <div class="d-flex d-lg-block d-xl-flex align-items-end">
+                        <h3 class="tx-normal tx-rubik mg-b-0 mg-r-5 lh-1">5
+                        </h3>
+                    </div>
+                </div>
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-2 mg-t-10 mg-lg-t-0">
+                <div class="card card-body">
+                    <h6 class="tx-uppercase tx-11 tx-spacing-1 tx-color-02 tx-semibold mg-b-8">Order Amount</h6>
+                    <div class="d-flex d-lg-block d-xl-flex align-items-end">
+                        <h3 class="tx-normal tx-rubik mg-b-0 mg-r-5 lh-1">10k
+                        </h3>
+                    </div>
+                </div>
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-2 mg-t-10 mg-lg-t-0">
+                <div class="card card-body">
+                    <h6 class="tx-uppercase tx-11 tx-spacing-1 tx-color-02 tx-semibold mg-b-8">Total Products</h6>
+                    <div class="d-flex d-lg-block d-xl-flex align-items-end">
+                        <h3 class="tx-normal tx-rubik mg-b-0 mg-r-5 lh-1">80
+                        </h3>
+                    </div>
+                </div>
+            </div><!-- col -->
+        </div><!-- row -->
+    </div><!-- container -->
+</div><!-- content -->
+{% endblock %}
+{% block foot_script %}
+<script src="{% static 'eadmin/lib/chart.js/Chart.bundle.min.js' %}"></script>
+<script>
+var ctxColor1 = '#1ce1ac';
+// Line chart
+var max = {{ max_val|safe }};
+var steps = 5;
+var ctx2 = document.getElementById('chartLine1');
+new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+            data: {{ chart_val|safe }},
+            borderColor: ctxColor1,
+            borderWidth: 1,
+            fill: false
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        legend: {
+            display: false,
+            labels: {
+                display: false
+            }
+        },
+        scales: {
+            yAxes: [{
+                gridLines: {
+                    color: '#e5e9f2'
+                },
+                ticks: {
+                    beginAtZero: true,
+                    fontSize: 10,
+                    stepSize: Math.ceil(max / steps),
+                    max: max
+                }
+            }],
+            xAxes: [{
+                gridLines: {
+                    display: false
+                },
+                ticks: {
+                    beginAtZero: true,
+                    fontSize: 11
+                }
+            }]
+        }
+    }
+});
+// Line chart
+var max1 = {{ ads_max_val|safe }};
+var steps1 = 5;
+var ctx2 = document.getElementById('chartLine2');
+new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+            data: {{ ads_chart_val|safe }},
+            borderColor: ctxColor1,
+            borderWidth: 1,
+            fill: false
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        legend: {
+            display: false,
+            labels: {
+                display: false
+            }
+        },
+        scales: {
+            yAxes: [{
+                gridLines: {
+                    color: '#e5e9f2'
+                },
+                ticks: {
+                    beginAtZero: true,
+                    fontSize: 10,
+                    stepSize: Math.ceil(max1 / steps1),
+                    max: max1
+                }
+            }],
+            xAxes: [{
+                gridLines: {
+                    display: false
+                },
+                ticks: {
+                    beginAtZero: true,
+                    fontSize: 11
+                }
+            }]
+        }
+    }
+});
+</script>
+{% endblock %}
