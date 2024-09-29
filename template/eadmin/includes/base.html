@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    {% include "eadmin/includes/meta.html" %}
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'eadmin/assets/img/favicon.png' %}">
+    <title>{% block title %} {% endblock %}</title>
+    <!-- vendor css -->
+    {% include "eadmin/includes/css.html" %}
+  </head>
+  <body class="page-profile pos-relative" data-spy="scroll" data-target="#navSection" data-offset="120">
+    <div class="page_loading">
+      <div class="loading_image">
+          <p class="load_img"><img  src="{% static 'eadmin/assets/img/loader.gif' %}" width=""></p>
+          <p class="load_text">Loading Please Wait...</p>
+      </div>
+    </div>
+    {% include "eadmin/includes/header.html" %}
+    {% block body_content %}
+    {% endblock %}
+    {% include "eadmin/includes/footer.html" %}
+    {% include "eadmin/includes/js.html" %}
+    {% block foot_script %}
+    {% endblock %}
+  </body>
+</html>

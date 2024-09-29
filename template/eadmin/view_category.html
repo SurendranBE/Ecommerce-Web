@@ -1,0 +1,196 @@
+{% extends "eadmin/includes/base.html" %}
+{% load static %}
+{% block title %}View{% endblock %}
+{% block body_content %}
+<div class="content content-fixed">
+    <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0 min_height600">
+        <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                        <li class="breadcrumb-item"><a href="/eadmin/">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Manage Category</li>
+                    </ol>
+                </nav>
+                <h4 class="mg-b-0 tx-spacing--1">Manage Category</h4>
+            </div>
+            <div class="d-none d-md-block">
+                <a href="eadmin/add" class="btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5"><i data-feather="plus" class="wd-10 mg-r-5"></i> Add category</a>
+            </div>
+        </div>
+        <!-- <hr class="mg-y-40"> -->
+        <div data-label="" class="df-example demo-table">
+            <table id="example2" class="table">
+                <thead>
+                    <tr>
+                        <th class="wd-5p">#</th>
+                        <th class="wd-13p">Image </th>
+                        <th class="wd-30p">Category Name</th>
+                        <th class="wd-12p">Total Videos</th>
+                        <th class="wd-15p">Status</th>
+                        {% if active == 1 %}
+                        <th class="wd-15p">Visibility</th>
+                        {% endif %}
+                        <th class="wd-10p">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category_list_val in category_list %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {% if category_list_val.image %}
+                            <img src="{{ category_list_val.image }}" height="75" width="75" class="img-thumbnail" />
+                            {% endif %}
+                            
+                        </td>
+                        <td>
+                            {{ category_list_val.category_name }}
+                        </td>
+                        <td>
+                            
+                        </td>
+                       
+                        <td>
+                            {% if category_list_val.draft_status == 0 %}
+                            <span class="badge badge-pill badge-warning">Draft</span>
+                            <p>
+                                {% if publish == 1 %}
+                                <a href='javascript:void()' class='btn btn-success btn-icon publishCategory btn-sm' data-item='{{ category_list_val.id }}'><i class="fa fa-newspaper"></i> Publish</a>
+                                {% endif %}
+                            </p>
+                            {% elif category_list_val.draft_status == 1 %}
+                            <span class="badge badge-pill badge-info">Published</span>
+                            {% endif %}
+                        </td>
+                        {% if active == 1 %}
+                        <td>
+                            <div class="custom-control custom-switch">
+                              <input type="checkbox" class="custom-control-input categoryActive" id="customSwitch{{ category_list_val.id }}" data-option='{{ category_list_val.id }}' {% if category_list_val.visibility == 1 %} checked="checked" {% endif %}>
+                              <label class="custom-control-label" for="customSwitch{{ category_list_val.id }}"></label>
+                            </div>
+                        </td>
+                        {% endif %}
+                        <td>
+                            <a href="/category/edit/{{category_list_val.id}}" class="btn btn-primary btn-icon">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div><!-- df-example -->
+    </div><!-- container -->
+</div><!-- content -->
+{% endblock %}
+{% block foot_script %}
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+$(document).on('change', '.categoryActive', function() { 
+    var value = $(this).data("option");
+    if(this.checked) {
+        var status = 1;
+    }
+    else{
+        var status = 0;
+    }
+    $.ajax({
+        headers: {
+            "X-CSRFToken": csrftoken
+        },
+        url: '/category/active-category/'+value,
+        data: {
+            'status':status,
+        },
+        dataType: 'json',
+        beforeSend: function() {
+            $(".page_loading").show();
+        },
+        success: function(data) {
+            $(".page_loading").hide();
+            if(data['update_status'] == "Success"){
+                swal({
+                    title: 'Saved Successfully',
+                    showDenyButton: false,
+                    showCancelButton: false,
+                    confirmButtonText: `OK`,
+                },function(result) {
+                    if (result) {
+                        window.location.href = "/category/view";
+                    }
+                })
+            }
+        }
+    });
+    return false;
+});
+$(".publishCategory").click(function() {
+    var id = $(this).data("item");
+    swal({
+        title: "Are you sure to publish?",
+        text: "",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, publish it!",
+        closeOnConfirm: false,
+        closeOnCancel: false
+    }, function(isConfirm) {
+        if (isConfirm) {
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                url: '/category/publish-category/'+id,
+                cache: false,
+                processData: false,
+                contentType: false,
+                method: 'POST',
+                dataType: 'json',
+                beforeSend: function() {
+                    $(".page_loading").show();
+                },
+                success: function(data) {
+                    $(".page_loading").hide();
+                    if(data['update_status'] == "Success"){
+                        swal({
+                            title: 'Saved Successfully',
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: `OK`,
+                        },function(result) {
+                            if (result) {
+                                window.location.href = "/category/view";
+                            }
+                        })
+                    } else {
+                        swal("Error Occurred", "Sorry Unexpected Error Occurred. Please Try Again.", "error");
+                    }
+                }
+            });
+        } else {
+            swal("Cancelled", "not publish", "error");
+        }
+    });
+    return false;
+});
+</script>
+{% endblock %}

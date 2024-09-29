@@ -1,0 +1,234 @@
+{% extends "eadmin/includes/base.html" %}
+{% load static %}
+{% block title %}Ecommerce |  Category{% endblock %}
+{% block body_content %}
+<div class="content content-fixed">
+    <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0 min_height600">
+        <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                        <li class="breadcrumb-item"><a href="/eadmin/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/category/view">Manage Category</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add Category</li>
+                    </ol>
+                </nav>
+                <h4 class="mg-b-0 tx-spacing--1">Add Category</h4>
+            </div>
+        </div>
+        <!-- <hr class="mg-y-40"> -->
+        <div class="form-error"></div>
+        <form method="POST" id="addCategory" autocomplete="off" accept-charset="utf-8" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-12">
+                    <fieldset class="form-fieldset">  
+                        <legend>General Information</legend>
+                        <div class="form-group">
+                            <label>Category Name <em>*</em></label>
+                            <input type="text" class="form-control" placeholder="Enter Category Name" name="category_name" id="category_name" required="">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Sort Order <em>*</em></label>
+                                    <input type="number" class="form-control" placeholder="Enter Sort Order" name="sort_order" required="" id="sort_order">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Select Status <em>*</em></label>
+                                    <select class="form-control select2" tabindex="-1" aria-hidden="true" name="draft_status" id="draft_status" required="">
+                                        <option value="1">Publish</option>
+                                        <option value="0">Draft</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class='summernote' name="description" id="description" placeholder="Description"></textarea>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-fieldset">
+                        <legend>Image Upload</legend>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Category Image <em>*</em></label>
+                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                        <div class="fileupload-preview fileupload-large thumbnail"><img src="{% static 'eadmin/assets/img/file_upload_icon.jpg' %}"></div>
+                                        <div>
+                                            <span class="btn btn-default btn-file">
+                                                <span class="fileupload-new">Select image</span>
+                                                <span class="fileupload-exists">Change</span>
+                                                <input type="file" id="image" name="image" />
+                                                <input type="hidden" name="" id="" />
+                                            </span>
+                                            <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                        </div>
+                                    </div>
+                                    <div class="imgerr"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Banner Image <em>*</em></label>
+                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                                        <div class="fileupload-preview fileupload-large thumbnail"><img src="{% static 'eadmin/assets/img/file_upload_icon.jpg' %}"></div>
+                                        <div>
+                                            <span class="btn btn-default btn-file">
+                                                <span class="fileupload-new">Select image</span>
+                                                <span class="fileupload-exists">Change</span>
+                                                <input type="file" id="banner_img" name="banner_img" />
+                                                <input type="hidden" name="" id="" />
+                                            </span>
+                                            <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                        </div>
+                                    </div>
+                                    <div class="imgerr"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="form_submit_footer">
+                <div class="form_footer_contents">
+                    <div class="text-right m-b-0">
+                        <a href="/category/view" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div><!-- container -->
+</div><!-- content -->
+{% endblock %}
+
+{% block foot_script %}
+<script>
+$("#addCategory").validate({
+    rules: {
+        category_name: {
+            required: true
+
+        },
+        sort_order: {
+            required: true
+
+        },
+        image: {
+            required: true
+        },
+        banner_img: {
+            required: true
+        },
+    },
+    messages: {
+        category_name: {
+            required: "Please Enter Category Name",
+        },
+        sort_order: {
+            required: "Please Enter Sort Order",
+        },
+        image: {
+            required: "Please Upload image",
+        },
+        banner_img: {
+            required: "Please Upload Banner Image",
+        },
+    },
+    submitHandler: function(form) {
+        var data = new FormData($('form').get(0));
+        var draft_status = $("#draft_status").val();
+        if (draft_status == 1) {
+            swal({
+                title: "Are sure you to publish this category ?",
+                text: "",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#5fbeaa",
+                confirmButtonText: "Yes, publish it!",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: '/category/ajax-insert',
+                        data: data,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        method: 'POST',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $(".page_loading").show();
+                        },
+                        success: function(data) {
+                            $(".page_loading").hide();
+                            if(data['save_status'] == "Success"){
+                                swal({
+                                    title: 'Saved Successfully',
+                                    showDenyButton: false,
+                                    showCancelButton: false,
+                                    confirmButtonText: `OK`,
+                                },function(result) {
+                                    if (result) {
+                                      window.location.href = "/category/view";
+                                    }
+                                })
+                              }
+                              if(data['save_status'] == "Failed"){
+                                swal({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Save Failed!',
+                                })
+                              }
+                        }
+                    });
+                } else {
+                    swal("Cancelled", "Category not added", "error");
+                }
+            });
+        } else {
+            $.ajax({
+                url: '/category/ajax-insert',
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                method: 'POST',
+                dataType: 'json',
+                beforeSend: function() {
+                    $(".page_loading").show();
+                },
+                success: function(data) {
+                    $(".page_loading").hide();
+                    if(data['save_status'] == "Success"){
+                        swal({
+                            title: 'Saved Successfully',
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: `OK`,
+                        },function(result) {
+                            if (result) {
+                                alert("TESTss");
+                                window.location.href = "/category/view";
+                            }
+                        })
+                        }
+                        if(data['save_status'] == "Failed"){
+                        swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Save Failed!',
+                        })
+                        }
+                }
+            });
+        }
+        return false;
+    }
+});
+</script>
+{% endblock %}

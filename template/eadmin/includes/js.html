@@ -1,0 +1,172 @@
+{% load static %}
+<script src="{% static 'eadmin/lib/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/feather-icons/feather.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/jquery.flot/jquery.flot.js' %}"></script>
+<script src="{% static 'eadmin/lib/jquery.flot/jquery.flot.stack.js' %}"></script>
+<script src="{% static 'eadmin/lib/jquery.flot/jquery.flot.resize.js' %}"></script>
+<script src="{% static 'eadmin/lib/chart.js/Chart.bundle.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/jqvmap/jquery.vmap.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+
+<script src="{% static 'eadmin/assets/js/dashforge.js' %}"></script>
+<script src="{% static 'eadmin/assets/js/dashforge.sampledata.js' %}"></script>
+<!-- <script src="{% static 'eadmin/assets/js/dashboard-one.js' %}"></script>
+ -->
+<!-- append theme customizer -->
+<script src="{% static 'eadmin/lib/js-cookie/js.cookie.js' %}"></script>
+<!-- <script src="{% static 'eadmin/assets/js/dashforge.settings.js' %}"></script> -->
+<script src="{% static 'eadmin/lib/prismjs/prism.js' %}"></script>
+<script src="{% static 'eadmin/lib/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/summernote/summernote.min.js' %}"></script>
+<script src="{% static 'eadmin/assets/js/validate.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/sweetalert/sweetalert.min.js' %}"></script>
+<!-- data table -->
+<script src="{% static 'eadmin/lib/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/datatables.net-dt/js/dataTables.dataTables.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/datatables.net-dt/js/dataTables.dataTables.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js' %}"></script>
+<script src="{% static 'eadmin/lib/jqueryui/jquery-ui.min.js' %}"></script>
+
+<script src="{% static 'eadmin/lib/bootstrap-filestyle/src/bootstrap-filestyle.min.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'eadmin/lib/fileupload/bootstrap-fileupload.js' %}"></script>
+<script type="text/javascript" src="{% static 'eadmin/lib/jqueryui/jquery-ui.min.js' %}"></script>
+<script>
+$(function() {
+    'use strict'
+    $('#start_dates').datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: 'dd/mm/yy',
+        onSelect: function(date) {
+            var dateAr = date.split('/');
+            var newDate = dateAr[2] + '-' + dateAr[1] + '-' + dateAr[0];
+            $("#start_date").val(newDate);
+        },
+    });
+    $('#end_dates').datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: true,
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: 'dd/mm/yy',
+        onSelect: function(date) {
+            var dateAr = date.split('/');
+            var newDate = dateAr[2] + '-' + dateAr[1] + '-' + dateAr[0];
+            $("#end_date").val(newDate);
+        },
+    });
+});
+</script>
+<script>
+$(function(){
+	'use strict'
+});
+$('.select2-no-search').select2({
+  	minimumResultsForSearch: Infinity,
+});
+
+$('.select2').select2({
+  placeholder: 'Choose one',
+  searchInputPlaceholder: 'Search options'
+});
+jQuery(document).ready(function() {
+    $('.summernote').summernote({
+        height: 168, // set editor height
+        minHeight: null, // set minimum height of editor
+        maxHeight: null, // set maximum height of editor
+        focus: false,
+    });
+});
+$('#example2').DataTable({
+     language: {
+        searchPlaceholder: 'Search...',
+        sSearch: '',
+        lengthMenu: '_MENU_ items/page',
+      }
+});
+$(document).ready(function() {
+    $("#category_name").blur(function() {
+        var string = $(this).val();
+        var str = $.trim(string);
+        $("#meta_title").val(str);
+        var string = string.replace(/[^a-zA-Z0-9 ]/g, "");
+        var next = string.trim();
+        var url = next.replace(/ +/g, '-').toLowerCase();
+        $('#url').val(url);
+        $('#new_url').val(url);
+    });
+    $("#title").blur(function() {
+        var string = $(this).val();
+        var str = $.trim(string);
+        $("#meta_title").val(str);
+        var string = string.replace(/[^a-zA-Z0-9 ]/g, "");
+        var next = string.trim();
+        var url = next.replace(/ +/g, '-').toLowerCase();
+        $('#token').val(url);
+    });
+})
+$('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+</script>
+
+
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+$(document).on('click', '.deleteRecord', function() { 
+    var result_id   = $(this).data("id");
+    swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this Image !",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false,
+        closeOnCancel: false
+    }, function(isConfirm) {
+        if (isConfirm) {
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": csrftoken
+                },
+                type: "POST",
+                url: '/banner_videos/delete_record/'+result_id,
+                dataType: 'json',
+                data: {'result': result_id},
+                beforeSend: function() {
+                    $(".page_loading").show();
+                },
+                success: function(data) {
+                    $(".page_loading").hide();
+                    if(data == "Success"){
+                        location.reload();
+                    }
+                }
+            });
+        } else {
+            swal("Cancelled", "Image retained", "error");
+        }
+    });
+    return false;
+});
+</script>
